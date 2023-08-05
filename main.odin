@@ -1,7 +1,6 @@
 package main
 
 import "core:fmt"
-import "entities"
 import rl "vendor:raylib"
 
 SCREEN_WIDTH :: 640
@@ -62,7 +61,7 @@ init_game :: proc() -> (GameState, Assets) {
 	assets.clouds = rl.LoadTexture("assets/images/clouds/cloud_1.png")
 	assets.bg = rl.LoadTexture("assets/images/background.png")
 
-	return gameState, assets
+	return gameState, assets;
 }
 
 draw_game :: proc(assets: ^Assets, gameState: ^GameState) {
@@ -89,7 +88,6 @@ draw_game :: proc(assets: ^Assets, gameState: ^GameState) {
 update_game :: proc (gameState: ^GameState, assets: ^Assets) {
 	gameState.cloudPos.y += (gameState.cloudMov.y - gameState.cloudMov.x) * 5
 
-	
 }
  
 input :: proc (gameState: ^GameState) {
