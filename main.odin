@@ -11,6 +11,8 @@ GameState :: struct {
 	playerY : i32,
 	playerHP : u8,
 
+	player : PhysicsEntity,
+
 	cloudPos : rl.Vector2,
 	cloudMov : rl.Vector2,
 
@@ -21,10 +23,8 @@ Assets :: struct {
 	clouds: rl.Texture2D,
 	bg: rl.Texture2D,
 
-	decor: [dynamic]rl.Texture2D,
-	grass: [dynamic]rl.Texture2D,
-	large_decor: [dynamic]rl.Texture2D,
-	stone: [dynamic]rl.Texture2D,
+	assets: map[string][dynamic]rl.Texture2D,
+
 	player: rl.Texture2D,
 }
 
@@ -51,7 +51,6 @@ main :: proc() {
 }
 
 init_game :: proc() -> (GameState, Assets) {
-
 	gameState : GameState
 	assets : Assets
 
@@ -66,13 +65,15 @@ init_game :: proc() -> (GameState, Assets) {
 
 	assets.clouds = rl.LoadTexture("assets/images/clouds/cloud_1.png")
 	assets.bg = rl.LoadTexture("assets/images/background.png")
-	assets.decor = load_images("tiles/decor")
-	assets.grass = load_images("tiles/grass")
-	assets.large_decor = load_images("tiles/large_decor")
-	assets.stone = load_images("tiles/stone")
+
+	assets.assets["decor"] = load_images("tiles/decor")	
+	assets.assets["grass"]	=	load_images("tiles/grass")
+	assets.assets["large_decor"]	=	load_images("tiles/large_decor")
+	assets.assets["stone"]	=	load_images("tiles/stone")
 
 	assets.player = load_image("entities/player.png")
 
+	gameState.player = new_entity("player", rl.Vector2{50,50}, rl.Vector2{8,15})
 
 	return gameState, assets
 }
@@ -84,7 +85,6 @@ draw_game :: proc(assets: ^Assets, gameState: ^GameState) {
 	rl.ClearBackground(rl.RAYWHITE)
 
 	rl.DrawTexture(assets.bg, 0, 0, rl.WHITE)
-
 
 	img_r := rl.Rectangle{gameState.cloudPos.x, gameState.cloudPos.y, f32(assets.clouds.width), f32(assets.clouds.height)}
 
@@ -99,7 +99,6 @@ draw_game :: proc(assets: ^Assets, gameState: ^GameState) {
 
 update_game :: proc (gameState: ^GameState, assets: ^Assets) {
 	gameState.cloudPos.y += (gameState.cloudMov.y - gameState.cloudMov.x) * 5
-
 }
  
 input :: proc (gameState: ^GameState) {

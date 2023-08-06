@@ -22,16 +22,15 @@ load_images :: proc(path: string) -> [dynamic]rl.Texture2D {
  base_img_path : string = "assets/images/"
 
  url := strings.concatenate({base_img_path, path})
- hdl := os.Handle{} 
- files, err := os.read_dir(hdl, 5) 
- free(&url)
+ hdl, err := os.open(url)
 
- if err == os.ERROR_NONE {
+ files, err2 := os.read_dir(hdl, 0) 
+
+ if err2 == os.ERROR_NONE {
   for img,i in files {
-   rl.TraceLog(rl.TraceLogLevel.INFO, strings.clone_to_cstring(img.fullpath))
+   append(&images, rl.LoadTexture(strings.clone_to_cstring(img.fullpath)))
   }
  }
-
 
  return images
 }
