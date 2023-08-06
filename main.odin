@@ -20,6 +20,12 @@ GameState :: struct {
 Assets :: struct {
 	clouds: rl.Texture2D,
 	bg: rl.Texture2D,
+
+	decor: [dynamic]rl.Texture2D,
+	grass: [dynamic]rl.Texture2D,
+	large_decor: [dynamic]rl.Texture2D,
+	stone: [dynamic]rl.Texture2D,
+	player: rl.Texture2D,
 }
 
 main :: proc() {
@@ -60,8 +66,15 @@ init_game :: proc() -> (GameState, Assets) {
 
 	assets.clouds = rl.LoadTexture("assets/images/clouds/cloud_1.png")
 	assets.bg = rl.LoadTexture("assets/images/background.png")
+	assets.decor = load_images("tiles/decor")
+	assets.grass = load_images("tiles/grass")
+	assets.large_decor = load_images("tiles/large_decor")
+	assets.stone = load_images("tiles/stone")
 
-	return gameState, assets;
+	assets.player = load_image("entities/player.png")
+
+
+	return gameState, assets
 }
 
 draw_game :: proc(assets: ^Assets, gameState: ^GameState) {
@@ -82,7 +95,6 @@ draw_game :: proc(assets: ^Assets, gameState: ^GameState) {
 	}
 
 	rl.DrawTexture(assets.clouds, i32(gameState.cloudPos.x), i32(gameState.cloudPos.y), rl.WHITE)
-
 }
 
 update_game :: proc (gameState: ^GameState, assets: ^Assets) {
