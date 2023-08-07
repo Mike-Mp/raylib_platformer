@@ -27,7 +27,7 @@ load_images :: proc(path: string) -> [dynamic]rl.Texture2D {
  files, err2 := os.read_dir(hdl, 0) 
 
  if err2 == os.ERROR_NONE {
-  for img,i in files {
+  for img in files {
    append(&images, rl.LoadTexture(strings.clone_to_cstring(img.fullpath)))
   }
  }
