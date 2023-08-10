@@ -7,8 +7,6 @@ SCREEN_WIDTH :: 640
 SCREEN_HEIGHT :: 480
 
 GameState :: struct {
-	// playerX : i32,
-	// playerY : i32,
 	playerHP : u8,
 
 	player : PhysicsEntity,
@@ -61,8 +59,6 @@ init_game :: proc() -> (GameState, Assets) {
 	gameState : GameState
 	assets : Assets
 
-	// gameState.playerX = 0
-	// gameState.playerY = 0
 	gameState.playerHP = 100
 
 	gameState.movement = rl.Vector2{0,0}

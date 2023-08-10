@@ -1,6 +1,8 @@
 package main
 
 import rl "vendor:raylib"
+import "core:strings"
+import "core:strconv"
 
 PhysicsEntity :: struct {
  e_type: string,
@@ -68,6 +70,10 @@ update_entity :: proc(gameState: ^GameState, entity: ^PhysicsEntity, movement: r
  }
 
  entity.velocity.y = min(5, entity.velocity.y+0.1)
+
+ buf := []byte{0}
+
+ rl.TraceLog(rl.TraceLogLevel.INFO, strings.clone_to_cstring(strconv.itoa(buf, int(entity.velocity.y))))
 
  if entity.collisions["down"] || entity.collisions["up"] {
   entity.velocity.y = 0
