@@ -12,9 +12,11 @@ GameState :: struct {
 	playerHP : u8,
 
 	player : PhysicsEntity,
+	movement: rl.Vector2,
 
-	cloudPos : rl.Vector2,
-	cloudMov : rl.Vector2,
+	clouds: [dynamic]Cloud,
+
+	scroll: rl.Vector2,
 
 	collision_area : rl.Rectangle,
 
@@ -36,7 +38,6 @@ main :: proc() {
 
 	gameState : GameState
 	assets : Assets
-	tesst : PhysicsEntity
 
 	gameState, assets = init_game()
 
@@ -64,8 +65,7 @@ init_game :: proc() -> (GameState, Assets) {
 	// gameState.playerY = 0
 	gameState.playerHP = 100
 
-	gameState.cloudPos = rl.Vector2{160.0, 260.0}
-	gameState.cloudMov = rl.Vector2{0, 0}
+	gameState.movement = rl.Vector2{0,0}
 
 	gameState.collision_area = rl.Rectangle{50,50,300,50}
 
@@ -78,10 +78,21 @@ init_game :: proc() -> (GameState, Assets) {
 	assets.assets["grass"]	=	load_images("tiles/grass")
 	assets.assets["large_decor"]	=	load_images("tiles/large_decor")
 	assets.assets["stone"]	=	load_images("tiles/stone")
+	assets.assets["clouds"]	=	load_images("clouds")
+
+	gameState.clouds = init_clouds(assets.assets["clouds"])
 
 	assets.player = load_image("entities/player.png")
 
 	gameState.player = new_entity("player", rl.Vector2{50,50}, rl.Vector2{8,15})
+
+	playerRect := rect(&gameState.player)
+
+	playerRectCenters := rl.Vector2{(playerRect.x + playerRect.width)/2, (playerRect.y + playerRect.height)/2}
+
+	gameState.scroll = rl.Vector2{ playerRectCenters.x - f32(rl.GetScreenWidth() / 2 - 0 / 30),
+																 playerRectCenters.y - f32(rl.GetScreenHeight() / 2 - 0 / 30),
+															 }
 
 	return gameState, assets
 }
@@ -90,47 +101,52 @@ draw_game :: proc(assets: ^Assets, gameState: ^GameState, target: rl.RenderTextu
 	rl.BeginDrawing()
 	defer rl.EndDrawing()
 
-	rl.ClearBackground(rl.RAYWHITE)
 	rl.BeginTextureMode(target)
 
 	rl.ClearBackground(rl.BLANK)
 
-	render_tilemap(&gameState.tilemap, assets)
 
 	rl.DrawTexture(assets.bg, 0, 0, rl.WHITE)
 
-	img_r := rl.Rectangle{gameState.cloudPos.x, gameState.cloudPos.y, f32(assets.clouds.width), f32(assets.clouds.height)}
 
-	if rl.CheckCollisionRecs(gameState.collision_area, img_r) {
-		rl.DrawRectangleRec(gameState.collision_area, rl.BLUE)	
-	} else {
-		rl.DrawRectangleRec(gameState.collision_area, rl.LIGHTGRAY)	
-	}
+	render_tilemap(&gameState.tilemap, assets)
+
+	render_scroll := rl.Vector2{ gameState.scroll.x, gameState.scroll.y }
+
+	render_clouds(&gameState.clouds, render_scroll)
+	render_entity(&gameState.player, assets, render_scroll)
+
+	rl.DrawTexture(assets.player, i32(gameState.player.pos.x), i32(gameState.player.pos.y), rl.WHITE)
 
 	rl.EndTextureMode()
 
-	rl.DrawTexture(assets.clouds, i32(gameState.cloudPos.x), i32(gameState.cloudPos.y), rl.WHITE)
 	rl.DrawTexturePro(target.texture, rl.Rectangle{0,0, f32(target.texture.width), f32(-target.texture.height)}, rl.Rectangle{0,0, f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}, rl.Vector2{0,0}, 0,rl.WHITE)
 }
 
 update_game :: proc (gameState: ^GameState, assets: ^Assets) {
-	gameState.cloudPos.y += (gameState.cloudMov.y - gameState.cloudMov.x) * 5
+
+	update_entity(gameState, &gameState.player, rl.Vector2{gameState.movement.y - gameState.movement.x, 0})
+
+	for cloud in &gameState.clouds {
+		update_cloud(&cloud)
+	}
+
 }
  
 input :: proc (gameState: ^GameState) {
-	if rl.IsKeyPressed(rl.KeyboardKey.DOWN) {
-		gameState.cloudMov.y = 1
+	if rl.IsKeyPressed(rl.KeyboardKey.LEFT) {
+		gameState.movement.x = 1
 	}
 
-	if rl.IsKeyPressed(rl.KeyboardKey.UP) {
-		gameState.cloudMov.x = 1
+	if rl.IsKeyPressed(rl.KeyboardKey.RIGHT) {
+		gameState.movement.y = 1
 	}
 
-	if rl.IsKeyReleased(rl.KeyboardKey.DOWN) {
-		gameState.cloudMov.y = 0
+	if rl.IsKeyReleased(rl.KeyboardKey.LEFT) {
+		gameState.movement.x = 0
 	}
 
-	if rl.IsKeyReleased(rl.KeyboardKey.UP) {
-		gameState.cloudMov.x = 0
+	if rl.IsKeyReleased(rl.KeyboardKey.RIGHT) {
+		gameState.movement.y = 0
 	}
 }

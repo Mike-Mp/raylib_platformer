@@ -50,18 +50,20 @@ update_entity :: proc(gameState: ^GameState, entity: ^PhysicsEntity, movement: r
 
  entity.pos.y += frame_movement.y
 
+ entity_rect2 : rl.Rectangle = rect(entity)
+
  for rect in physics_rects_around(&gameState.tilemap, entity.pos) {
-  if rl.CheckCollisionRecs(entity_rect, rect) {
+  if rl.CheckCollisionRecs(entity_rect2, rect) {
    if frame_movement.y > 0 {
-    entity_rect.y = rect.y - entity_rect.height
+    entity_rect2.y = rect.y - entity_rect2.height
     entity.collisions["down"] = true
    }
    if frame_movement.y < 0 {
-    entity_rect.y = rect.y + rect.height
+    entity_rect2.y = rect.y + rect.height
     entity.collisions["up"] = true
    }
 
-   entity.pos.y = entity_rect.y
+   entity.pos.y = entity_rect2.y
   }
  }
 
@@ -72,6 +74,6 @@ update_entity :: proc(gameState: ^GameState, entity: ^PhysicsEntity, movement: r
  }
 }
 
-render_entity :: proc(entity: ^PhysicsEntity, assets: ^Assets) {
-  rl.DrawTexture(assets.player, i32(entity.pos.x), i32(entity.pos.y), rl.WHITE)
+render_entity :: proc(entity: ^PhysicsEntity, assets: ^Assets, offset: rl.Vector2) {
+  rl.DrawTexture(assets.player, i32(entity.pos.x - offset.x), i32(entity.pos.y - offset.y), rl.WHITE)
 }
