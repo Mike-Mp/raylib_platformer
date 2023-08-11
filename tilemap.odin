@@ -2,6 +2,7 @@ package main
 
 import "core:strings"
 import "core:fmt"
+import "core:math"
 
 import rl "vendor:raylib"
 
@@ -15,7 +16,7 @@ Tile :: struct {
 
 Tilemap :: struct {
 	tile_size: int,
-  tiles: map[string]Tile,
+    tiles: map[string]Tile,
 	offgrid_tiles: [dynamic]Tile,
 }
 
@@ -39,8 +40,7 @@ init_tilemap :: proc(tile_size :int =16) -> Tilemap {
 tiles_around :: proc(tilemap: ^Tilemap, pos: rl.Vector2) -> [dynamic]Tile {
  tiles := [dynamic]Tile{}
 
- // %% modulo with floored division
- tile_loc := [2]int{int(pos.x)%%tilemap.tile_size, int(pos.y)%%tilemap.tile_size} 
+ tile_loc := [2]int{int(math.floor_f32(pos.x/f32(tilemap.tile_size))), int(math.floor_f32(pos.y)/f32(tilemap.tile_size))} 
 
  for offset in NEIGHBOR_OFFSETS {
   check_loc := strings.concatenate({fmt.aprint(tile_loc[0] + offset[0]) , ";", fmt.aprint(tile_loc[1] + offset[1])})

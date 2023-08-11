@@ -41,7 +41,7 @@ main :: proc() {
 
 	rl.SetTargetFPS(60)
 
-  target : rl.RenderTexture2D	= rl.LoadRenderTexture(320,240)
+	target : rl.RenderTexture2D	= rl.LoadRenderTexture(320,240)
 
 	for !rl.WindowShouldClose() {
 		input(&gameState)
