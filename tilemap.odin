@@ -70,8 +70,19 @@ render_tilemap :: proc(tilemap: ^Tilemap, assets: ^Assets) {
   rl.DrawTexture(assets.assets[tile.type][tile.variant], i32(tile.pos.x), i32(tile.pos.y), rl.WHITE)
  }
 
- for loc in tilemap.tiles {
-  tile := tilemap.tiles[loc]
-  rl.DrawTexture(assets.assets[tile.type][tile.variant], i32(tile.pos.x * f32(tilemap.tile_size)), i32(tile.pos.y * f32(tilemap.tile_size)), rl.WHITE)
+ for x in 0..=(int(math.floor_f32(f32(tilemap.tile_size+1/int(rl.GetScreenWidth()))))) {
+  for y in 0..=(int(math.floor_f32(f32(tilemap.tile_size+1/int(rl.GetScreenHeight()))))) {
+   loc := strings.concatenate({fmt.aprint(x) , ";" , fmt.aprint(y)})
+   if loc in tilemap.tiles {
+     tile := tilemap.tiles[loc]
+     rl.DrawTexture(assets.assets[tile.type][tile.variant], i32(tile.pos.x * f32(tilemap.tile_size)), i32(tile.pos.y * f32(tilemap.tile_size)), rl.WHITE)
+   }
+  }
  }
+        // for x in range(offset[0] // self.tile_size, (offset[0] + surf.get_width()) // self.tile_size + 1):
+        //     for y in range(offset[1] // self.tile_size, (offset[1] + surf.get_height()) // self.tile_size + 1):
+        //         loc = str(x) + ';' + str(y)
+        //         if loc in self.tilemap:
+        //             tile = self.tilemap[loc]
+        //             surf.blit(self.game.assets[tile['type']][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))
 }
